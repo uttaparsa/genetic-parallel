@@ -1,8 +1,13 @@
 // C++ program to create target string, starting from
 // random string using Genetic Algorithm
 
-#include <bits/stdc++.h>
+#include <windows.h>
 
+#include <string>
+#include <time.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 // Number of individuals in each generation
@@ -10,8 +15,7 @@ using namespace std;
 
 // Valid Genes
 
-const string GENES = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP"\ 
-
+const string GENES = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP"\
 "QRSTUVWXYZ 1234567890, .-;:_!\"#%&/()=?@${[]}";
 
 // Target string to be generated
@@ -199,4 +203,6 @@ int main()
     cout << "String: " << population[0].chromosome << "\t";
 
     cout << "Fitness: " << population[0].fitness << "\n";
+
+    return 0;
 }
