@@ -1,0 +1,231 @@
+// C++ program to create target string, starting from
+// random string using Genetic Algorithm
+
+#include <string>
+#include <time.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <omp.h>
+#include <fstream>
+#include <sstream> 
+using namespace std;
+
+// Number of individuals in each generation
+#define POPULATION_SIZE 500
+
+// Valid Genes
+
+const string GENES = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP"\
+"QRSTUVWXYZ 1234567890, .-;:_!\"#%&/()=?@${[]}";
+
+
+string TARGET = "bb";
+
+// Function to generate random numbers in given range
+
+int random_num(int start, int end)
+{
+
+    int range = (end - start) + 1;
+
+    int random_int = start + (rand() % range);
+
+    return random_int;
+}
+
+// Create random genes for mutation
+char mutated_genes()
+{
+
+    int len = GENES.size();
+    int r = random_num(0, len - 1);
+    return GENES[r];
+}
+
+// create chromosome or string of genes
+string create_gnome()
+{
+
+    int len = TARGET.size();
+    string gnome = "";
+    for (int i = 0; i < len; i++)
+        gnome += mutated_genes();
+    return gnome;
+}
+
+// Class representing individual in population
+
+class Individual
+{
+
+public:
+    string chromosome;
+
+    int fitness;
+
+    Individual(string chromosome);
+
+    Individual mate(Individual parent2);
+
+    int cal_fitness();
+};
+
+Individual::Individual(string chromosome)
+{
+
+    this->chromosome = chromosome;
+
+    fitness = cal_fitness();
+};
+
+// Perform mating and produce new offspring
+Individual Individual::mate(Individual par2)
+{
+    string child_chromosome = "";
+
+    int len = chromosome.size();
+
+    // #pragma omp for
+    for (int i = 0; i < len; i++)
+
+    {
+        float p = random_num(0, 100) / 100;
+
+        if (p < 0.45)
+            child_chromosome += chromosome[i];
+        else if (p < 0.90)
+            child_chromosome += par2.chromosome[i];
+        else
+            child_chromosome += mutated_genes();
+    }
+    return Individual(child_chromosome);
+};
+
+// Calculate fittness score, it is the number of
+// characters in string which differ from target
+// string.
+
+int Individual::cal_fitness()
+{
+    int len = TARGET.size();
+
+    int fitness = 0;
+
+    // #pragma omp for
+    for (int i = 0; i < len; i++)
+    {
+        if (chromosome[i] != TARGET[i])
+
+            fitness++;
+    }
+
+    return fitness;
+};
+
+// Overloading < operator
+
+bool operator<(const Individual &ind1, const Individual &ind2)
+{
+
+    return ind1.fitness < ind2.fitness;
+}
+
+// Driver code
+
+int main()
+{
+    std::ifstream t("target2.txt");
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+
+    TARGET = buffer.str();
+    std::cout << "target is : " << TARGET << endl;
+
+    srand((unsigned)(time(0)));
+
+    // current generation
+
+    int generation = 0;
+
+    vector<Individual> population;
+
+    bool found = false;
+
+    // create initial population
+
+    for (int i = 0; i < POPULATION_SIZE; i++)
+
+    {
+
+        string gnome = create_gnome();
+
+        population.push_back(Individual(gnome));
+    }
+
+    while (!found){
+
+
+        sort(population.begin(), population.end());
+
+
+        if (population[0].fitness <= 0){
+            found = true;
+            break;
+        }
+
+
+        vector<Individual> new_generation;
+
+        int s = (10 * POPULATION_SIZE) / 100;
+
+        for (int i = 0; i < s; i++)
+
+            new_generation.push_back(population[i]);
+
+        s = (90 * POPULATION_SIZE) / 100;
+    
+        // omp_set_num_threads(1);
+        // int nthreads;
+
+        // #pragma omp parallel 
+        // {
+        // int id , nthrds;
+        // id = omp_get_thread_num();
+        // nthrds =   omp_get_num_threads();
+        // if (id == 0) nthreads = nthrds;
+
+        // #pragma omp for
+        for (int i = 0; i < s; ++i)
+        {
+
+            int r = random_num(0, 50);
+            Individual parent1 = population[r];
+            r = random_num(0, 50);
+            Individual parent2 = population[r];
+            Individual offspring = parent1.mate(parent2);
+            new_generation.push_back(offspring);
+
+                
+        }
+
+
+        population = new_generation;
+
+        // cout << "Generation: " << generation << "\t";
+
+        // cout << "String: " << population[0].chromosome << "\t";
+
+        // cout << "Fitness: " << population[0].fitness << "\n";
+
+        generation++;
+    }
+
+    std::cout << "Generation: " << generation << "\t";
+
+    std::cout << "String: " << population[0].chromosome << "\t";
+
+    std::cout << "Fitness: " << population[0].fitness << "\n";
+
+    return 0;
+}

@@ -1,26 +1,27 @@
 // C++ program to create target string, starting from
 // random string using Genetic Algorithm
 
-#include <windows.h>
 
 #include <string>
 #include <time.h>
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 // Number of individuals in each generation
-#define POPULATION_SIZE 100
+#define POPULATION_SIZE 500
 
 // Valid Genes
+
 
 const string GENES = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP"\
 "QRSTUVWXYZ 1234567890, .-;:_!\"#%&/()=?@${[]}";
 
-// Target string to be generated
+string TARGET;
 
-const string TARGET = "I love GeeksforGeeks";
 
 // Function to generate random numbers in given range
 
@@ -135,7 +136,13 @@ bool operator<(const Individual &ind1, const Individual &ind2)
 // Driver code
 
 int main()
-{
+{   
+    std::ifstream t("target2.txt");
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+
+    TARGET = buffer.str();
+    std::cout << "target is : " << TARGET << endl;
 
     srand((unsigned)(time(0)));
 
@@ -189,11 +196,11 @@ int main()
 
         population = new_generation;
 
-        cout << "Generation: " << generation << "\t";
+        // cout << "Generation: " << generation << "\t";
 
-        cout << "String: " << population[0].chromosome << "\t";
+        // cout << "String: " << population[0].chromosome << "\t";
 
-        cout << "Fitness: " << population[0].fitness << "\n";
+        // cout << "Fitness: " << population[0].fitness << "\n";
 
         generation++;
     }
