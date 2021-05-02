@@ -1,0 +1,1 @@
+g++ parallel-genetic_algorithm.cpp -fopenmp -o parallel.out

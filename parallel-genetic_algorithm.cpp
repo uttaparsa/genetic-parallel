@@ -133,9 +133,14 @@ bool operator<(const Individual &ind1, const Individual &ind2)
 
 // Driver code
 
-int main()
+int main(int argc, char **argv)
 {
-    std::ifstream t("target2.txt");
+
+
+    char* inputName =  argv[1];
+
+
+    std::ifstream t(inputName);
     std::stringstream buffer;
     buffer << t.rdbuf();
 

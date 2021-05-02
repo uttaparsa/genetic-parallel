@@ -1,0 +1,1 @@
+g++ serial-genetic_algorithm.cpp -fopenmp -o serial.out

@@ -1,0 +1,1 @@
+time for i in {1..10}; do ./serial.out target3.txt; done
